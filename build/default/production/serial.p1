@@ -1,0 +1,311 @@
+Version 4.0 HI-TECH Software Intermediate Code
+"12 ./serial.h
+[; ;./serial.h: 12: struct eusart {
+[s S2 `Vuc 1 `Vuc 1 `Vuc 1 `Vuc 1 `Vuc 1 `Vuc 1 ]
+[n S2 eusart rcsta txsta txreg rcreg spbrg spbrgh ]
+"29 ./intr.h
+[; ;./intr.h: 29: struct intcon {
+[s S5 `Vuc 1 `Vuc 1 `Vuc 1 ]
+[n S5 intcon intcon3 intcon2 intcon ]
+"35
+[; ;./intr.h: 35: struct i_efp {
+[s S7 `Vuc 1 `Vuc 1 `Vuc 1 `Vuc 1 `Vuc 1 `Vuc 1 ]
+[n S7 i_efp pie1 pir1 ipr1 pie2 pir2 ipr2 ]
+"10 ./defines.h
+[; ;./defines.h: 10: volatile uint8 WREG __attribute__((address(0xFE8)));
+[v _WREG `Vuc ~T0 @X0 1 e@4072 ]
+"7 ./serial.h
+[; ;./serial.h: 7: volatile struct eusart EUSART __attribute__((address(0xFAB)));
+[v _EUSART `VS2 ~T0 @X0 1 e@4011 ]
+"10
+[; ;./serial.h: 10: volatile uint8 BAUDRATE __attribute__((address(0xFB8)));
+[v _BAUDRATE `Vuc ~T0 @X0 1 e@4024 ]
+"2 ./port.h
+[; ;./port.h: 2: volatile uint8 TRISB __attribute__((address(0xF93)));
+[v _TRISB `Vuc ~T0 @X0 1 e@3987 ]
+"5
+[; ;./port.h: 5: volatile uint8 PORTB __attribute__((address(0xF81)));
+[v _PORTB `Vuc ~T0 @X0 1 e@3969 ]
+"8
+[; ;./port.h: 8: volatile uint8 ANSELH __attribute__((address(0xF7F)));
+[v _ANSELH `Vuc ~T0 @X0 1 e@3967 ]
+"11
+[; ;./port.h: 11: volatile uint8 ANSEL __attribute__((address(0xF7E)));
+[v _ANSEL `Vuc ~T0 @X0 1 e@3966 ]
+"14
+[; ;./port.h: 14: volatile uint8 OSCCON __attribute__((address(0xFD3)));
+[v _OSCCON `Vuc ~T0 @X0 1 e@4051 ]
+"12 ./intr.h
+[; ;./intr.h: 12: volatile struct intcon INTCON __attribute__((address(0xFF0)));
+[v _INTCON `VS5 ~T0 @X0 1 e@4080 ]
+"15
+[; ;./intr.h: 15: volatile struct i_efp I_EFP __attribute__((address(0xF9D)));
+[v _I_EFP `VS7 ~T0 @X0 1 e@3997 ]
+"18
+[; ;./intr.h: 18: volatile uint8 RCON __attribute__((address(0xFD0)));
+[v _RCON `Vuc ~T0 @X0 1 e@4048 ]
+"21
+[; ;./intr.h: 21: volatile uint8 STATUS __attribute__((address(0xFD8)));
+[v _STATUS `Vuc ~T0 @X0 1 e@4056 ]
+"24
+[; ;./intr.h: 24: volatile uint8 BSR __attribute__((address(0xFE0)));
+[v _BSR `Vuc ~T0 @X0 1 e@4064 ]
+"26
+[; ;./intr.h: 26: volatile uint8 intr_stack[3];
+[v _intr_stack `Vuc ~T0 @X0 -> 3 `i e ]
+"6 serial.c
+[; ;serial.c: 6: int serial_init()
+[v _serial_init `(i ~T0 @X0 1 ef ]
+"7
+[; ;serial.c: 7: {
+{
+[e :U _serial_init ]
+[f ]
+"8
+[; ;serial.c: 8:     volatile struct eusart *est = &EUSART;
+[v _est `*VS2 ~T0 @X0 1 a ]
+[e = _est &U _EUSART ]
+"11
+[; ;serial.c: 11:     TRISB = 0x20;
+[e = _TRISB -> -> 32 `i `uc ]
+"12
+[; ;serial.c: 12:     ANSELH = 0x00;
+[e = _ANSELH -> -> 0 `i `uc ]
+"13
+[; ;serial.c: 13:     ANSEL = 0x00;
+[e = _ANSEL -> -> 0 `i `uc ]
+"16
+[; ;serial.c: 16:     est->txsta = 0x24;
+[e = . *U _est 1 -> -> 36 `i `uc ]
+"17
+[; ;serial.c: 17:     est->rcsta = 0x90;
+[e = . *U _est 0 -> -> 144 `i `uc ]
+"18
+[; ;serial.c: 18:     est->spbrg = 52;
+[e = . *U _est 4 -> -> 52 `i `uc ]
+"19
+[; ;serial.c: 19:     est->spbrgh = 0;
+[e = . *U _est 5 -> -> 0 `i `uc ]
+"20
+[; ;serial.c: 20:     return 0;
+[e ) -> 0 `i ]
+[e $UE 10  ]
+"21
+[; ;serial.c: 21: }
+[e :UE 10 ]
+}
+"23
+[; ;serial.c: 23: int serial_is_send_enable()
+[v _serial_is_send_enable `(i ~T0 @X0 1 ef ]
+"24
+[; ;serial.c: 24: {
+{
+[e :U _serial_is_send_enable ]
+[f ]
+"25
+[; ;serial.c: 25:     volatile struct eusart *est = &EUSART;
+[v _est `*VS2 ~T0 @X0 1 a ]
+[e = _est &U _EUSART ]
+"26
+[; ;serial.c: 26:     return (est->txsta & 0x02);
+[e ) & -> . *U _est 1 `i -> 2 `i ]
+[e $UE 11  ]
+"27
+[; ;serial.c: 27: }
+[e :UE 11 ]
+}
+"29
+[; ;serial.c: 29: int serial_send_byte(unsigned char c)
+[v _serial_send_byte `(i ~T0 @X0 1 ef1`uc ]
+"30
+[; ;serial.c: 30: {
+{
+[e :U _serial_send_byte ]
+"29
+[; ;serial.c: 29: int serial_send_byte(unsigned char c)
+[v _c `uc ~T0 @X0 1 r1 ]
+"30
+[; ;serial.c: 30: {
+[f ]
+"31
+[; ;serial.c: 31:     volatile struct eusart *est = &EUSART;
+[v _est `*VS2 ~T0 @X0 1 a ]
+[e = _est &U _EUSART ]
+"33
+[; ;serial.c: 33:     while(!serial_is_send_enable());
+[e $U 13  ]
+[e :U 14 ]
+[e :U 13 ]
+[e $ ! != ( _serial_is_send_enable ..  -> 0 `i 14  ]
+[e :U 15 ]
+"35
+[; ;serial.c: 35:     est->txreg = c;
+[e = . *U _est 2 _c ]
+"37
+[; ;serial.c: 37:     return 0;
+[e ) -> 0 `i ]
+[e $UE 12  ]
+"38
+[; ;serial.c: 38: }
+[e :UE 12 ]
+}
+"40
+[; ;serial.c: 40: void serial_intr_send_enable()
+[v _serial_intr_send_enable `(v ~T0 @X0 1 ef ]
+"41
+[; ;serial.c: 41: {
+{
+[e :U _serial_intr_send_enable ]
+[f ]
+"42
+[; ;serial.c: 42:     __asm("bsf 0xf9d,4");
+[; <" bsf 0xf9d,4 ;# ">
+"43
+[; ;serial.c: 43: }
+[e :UE 16 ]
+}
+"44
+[; ;serial.c: 44: void serial_intr_send_disable()
+[v _serial_intr_send_disable `(v ~T0 @X0 1 ef ]
+"45
+[; ;serial.c: 45: {
+{
+[e :U _serial_intr_send_disable ]
+[f ]
+"46
+[; ;serial.c: 46:     __asm("bcf 0xf9d,4");
+[; <" bcf 0xf9d,4 ;# ">
+"47
+[; ;serial.c: 47: }
+[e :UE 17 ]
+}
+"48
+[; ;serial.c: 48: int serial_intr_is_send_enable()
+[v _serial_intr_is_send_enable `(i ~T0 @X0 1 ef ]
+"49
+[; ;serial.c: 49: {
+{
+[e :U _serial_intr_is_send_enable ]
+[f ]
+"50
+[; ;serial.c: 50:     volatile struct i_efp *iefp = &I_EFP;
+[v _iefp `*VS7 ~T0 @X0 1 a ]
+[e = _iefp &U _I_EFP ]
+"51
+[; ;serial.c: 51:     return (iefp->pie1 & 0x10) ? 1 : 0;
+[e ) ? != & -> . *U _iefp 0 `i -> 16 `i -> 0 `i : -> 1 `i -> 0 `i ]
+[e $UE 18  ]
+"52
+[; ;serial.c: 52: }
+[e :UE 18 ]
+}
+"58
+[; ;serial.c: 58: int serial_is_recv_enable()
+[v _serial_is_recv_enable `(i ~T0 @X0 1 ef ]
+"59
+[; ;serial.c: 59: {
+{
+[e :U _serial_is_recv_enable ]
+[f ]
+"60
+[; ;serial.c: 60:     volatile struct i_efp *iefp = &I_EFP;
+[v _iefp `*VS7 ~T0 @X0 1 a ]
+[e = _iefp &U _I_EFP ]
+"61
+[; ;serial.c: 61:     return (iefp->pir1 & 0x20);
+[e ) & -> . *U _iefp 1 `i -> 32 `i ]
+[e $UE 19  ]
+"62
+[; ;serial.c: 62: }
+[e :UE 19 ]
+}
+"64
+[; ;serial.c: 64: uint8 serial_recv_byte()
+[v _serial_recv_byte `(uc ~T0 @X0 1 ef ]
+"65
+[; ;serial.c: 65: {
+{
+[e :U _serial_recv_byte ]
+[f ]
+"66
+[; ;serial.c: 66:     volatile struct eusart *est = &EUSART;
+[v _est `*VS2 ~T0 @X0 1 a ]
+[e = _est &U _EUSART ]
+"67
+[; ;serial.c: 67:     volatile struct i_efp *iefp = &I_EFP;
+[v _iefp `*VS7 ~T0 @X0 1 a ]
+[e = _iefp &U _I_EFP ]
+"68
+[; ;serial.c: 68:     uint8 c;
+[v _c `uc ~T0 @X0 1 a ]
+"70
+[; ;serial.c: 70:     while(!serial_is_recv_enable());
+[e $U 21  ]
+[e :U 22 ]
+[e :U 21 ]
+[e $ ! != ( _serial_is_recv_enable ..  -> 0 `i 22  ]
+[e :U 23 ]
+"72
+[; ;serial.c: 72:     c = est->rcreg;
+[e = _c . *U _est 3 ]
+"73
+[; ;serial.c: 73:     __asm("bcf 0xf9e,5");
+[; <" bcf 0xf9e,5 ;# ">
+"75
+[; ;serial.c: 75:     return c;
+[e ) _c ]
+[e $UE 20  ]
+"76
+[; ;serial.c: 76: }
+[e :UE 20 ]
+}
+"78
+[; ;serial.c: 78: void serial_intr_recv_enable()
+[v _serial_intr_recv_enable `(v ~T0 @X0 1 ef ]
+"79
+[; ;serial.c: 79: {
+{
+[e :U _serial_intr_recv_enable ]
+[f ]
+"80
+[; ;serial.c: 80:     __asm("bsf 0xf9d,5");
+[; <" bsf 0xf9d,5 ;# ">
+"81
+[; ;serial.c: 81: }
+[e :UE 24 ]
+}
+"82
+[; ;serial.c: 82: void serial_intr_recv_disable()
+[v _serial_intr_recv_disable `(v ~T0 @X0 1 ef ]
+"83
+[; ;serial.c: 83: {
+{
+[e :U _serial_intr_recv_disable ]
+[f ]
+"84
+[; ;serial.c: 84:     __asm("bcf 0xf9d,5");
+[; <" bcf 0xf9d,5 ;# ">
+"85
+[; ;serial.c: 85: }
+[e :UE 25 ]
+}
+"86
+[; ;serial.c: 86: int serial_intr_is_recv_enable()
+[v _serial_intr_is_recv_enable `(i ~T0 @X0 1 ef ]
+"87
+[; ;serial.c: 87: {
+{
+[e :U _serial_intr_is_recv_enable ]
+[f ]
+"88
+[; ;serial.c: 88:     volatile struct i_efp *iefp = &I_EFP;
+[v _iefp `*VS7 ~T0 @X0 1 a ]
+[e = _iefp &U _I_EFP ]
+"89
+[; ;serial.c: 89:     return (iefp->pie1 & 0x20) ? 1 : 0;
+[e ) ? != & -> . *U _iefp 0 `i -> 32 `i -> 0 `i : -> 1 `i -> 0 `i ]
+[e $UE 26  ]
+"90
+[; ;serial.c: 90: }
+[e :UE 26 ]
+}

@@ -1,0 +1,574 @@
+Version 4.0 HI-TECH Software Intermediate Code
+"12 ./serial.h
+[; ;./serial.h: 12: struct eusart {
+[s S2 `Vuc 1 `Vuc 1 `Vuc 1 `Vuc 1 `Vuc 1 `Vuc 1 ]
+[n S2 eusart rcsta txsta txreg rcreg spbrg spbrgh ]
+"25
+[; ;./serial.h: 25: int serial_send_byte(unsigned char c);
+[v _serial_send_byte `(i ~T0 @X0 0 ef1`uc ]
+"31
+[; ;./serial.h: 31: uint8 serial_recv_byte();
+[v _serial_recv_byte `(uc ~T0 @X0 0 e? ]
+"10 ./defines.h
+[; ;./defines.h: 10: volatile uint8 WREG __attribute__((address(0xFE8)));
+[v _WREG `Vuc ~T0 @X0 1 e@4072 ]
+"7 ./serial.h
+[; ;./serial.h: 7: volatile struct eusart EUSART __attribute__((address(0xFAB)));
+[v _EUSART `VS2 ~T0 @X0 1 e@4011 ]
+"10
+[; ;./serial.h: 10: volatile uint8 BAUDRATE __attribute__((address(0xFB8)));
+[v _BAUDRATE `Vuc ~T0 @X0 1 e@4024 ]
+"3 lib.c
+[; ;lib.c: 3: int putc(unsigned char c)
+[v _putc `(i ~T0 @X0 1 ef1`uc ]
+"4
+[; ;lib.c: 4: {
+{
+[e :U _putc ]
+"3
+[; ;lib.c: 3: int putc(unsigned char c)
+[v _c `uc ~T0 @X0 1 r1 ]
+"4
+[; ;lib.c: 4: {
+[f ]
+"5
+[; ;lib.c: 5:     if(c == '\n')
+[e $ ! == -> _c `ui -> 10 `ui 5  ]
+"6
+[; ;lib.c: 6:         serial_send_byte('\r');
+[e ( _serial_send_byte (1 -> -> 13 `ui `uc ]
+[e :U 5 ]
+"7
+[; ;lib.c: 7:     return serial_send_byte(c);
+[e ) ( _serial_send_byte (1 _c ]
+[e $UE 4  ]
+"8
+[; ;lib.c: 8: }
+[e :UE 4 ]
+}
+"10
+[; ;lib.c: 10: int puts(unsigned char *str)
+[v _puts `(i ~T0 @X0 1 ef1`*uc ]
+"11
+[; ;lib.c: 11: {
+{
+[e :U _puts ]
+"10
+[; ;lib.c: 10: int puts(unsigned char *str)
+[v _str `*uc ~T0 @X0 1 r1 ]
+"11
+[; ;lib.c: 11: {
+[f ]
+"12
+[; ;lib.c: 12:     while(*str)
+[e $U 7  ]
+[e :U 8 ]
+"13
+[; ;lib.c: 13:         putc(*(str++));
+[e ( _putc (1 *U ++ _str * -> -> 1 `i `x -> -> # *U _str `i `x ]
+[e :U 7 ]
+"12
+[; ;lib.c: 12:     while(*str)
+[e $ != -> *U _str `i -> 0 `i 8  ]
+[e :U 9 ]
+"14
+[; ;lib.c: 14:     return 0;
+[e ) -> 0 `i ]
+[e $UE 6  ]
+"15
+[; ;lib.c: 15: }
+[e :UE 6 ]
+}
+"17
+[; ;lib.c: 17: unsigned char getc(void)
+[v _getc `(uc ~T0 @X0 1 ef ]
+"18
+[; ;lib.c: 18: {
+{
+[e :U _getc ]
+[f ]
+"19
+[; ;lib.c: 19:     unsigned char c = serial_recv_byte();
+[v _c `uc ~T0 @X0 1 a ]
+[e = _c ( _serial_recv_byte ..  ]
+"20
+[; ;lib.c: 20:     c = (c == '\r') ? '\n' : c;
+[e = _c -> ? == -> _c `ui -> 13 `ui : -> 10 `ui -> _c `ui `uc ]
+"21
+[; ;lib.c: 21:     putc(c);
+[e ( _putc (1 _c ]
+"22
+[; ;lib.c: 22:     return c;
+[e ) _c ]
+[e $UE 10  ]
+"23
+[; ;lib.c: 23: }
+[e :UE 10 ]
+}
+"25
+[; ;lib.c: 25: int gets(unsigned char *buf)
+[v _gets `(i ~T0 @X0 1 ef1`*uc ]
+"26
+[; ;lib.c: 26: {
+{
+[e :U _gets ]
+"25
+[; ;lib.c: 25: int gets(unsigned char *buf)
+[v _buf `*uc ~T0 @X0 1 r1 ]
+"26
+[; ;lib.c: 26: {
+[f ]
+"27
+[; ;lib.c: 27:     int i=0;
+[v _i `i ~T0 @X0 1 a ]
+[e = _i -> 0 `i ]
+"28
+[; ;lib.c: 28:     unsigned char c;
+[v _c `uc ~T0 @X0 1 a ]
+"29
+[; ;lib.c: 29:     do {
+[e :U 14 ]
+{
+"30
+[; ;lib.c: 30:         c = getc();
+[e = _c ( _getc ..  ]
+"31
+[; ;lib.c: 31:         if(c == '\n')
+[e $ ! == -> _c `ui -> 10 `ui 15  ]
+"32
+[; ;lib.c: 32:             c = '\0';
+[e = _c -> -> 0 `ui `uc ]
+[e :U 15 ]
+"33
+[; ;lib.c: 33:         buf[i++] = c;
+[e = *U + _buf * -> ++ _i -> 1 `i `x -> -> # *U _buf `i `x _c ]
+"34
+[; ;lib.c: 34:     }while (c);
+}
+[e $ != -> _c `i -> 0 `i 14  ]
+[e :U 13 ]
+"35
+[; ;lib.c: 35:     return i-1;
+[e ) - _i -> 1 `i ]
+[e $UE 11  ]
+"36
+[; ;lib.c: 36: }
+[e :UE 11 ]
+}
+"38
+[; ;lib.c: 38: void *memset(void *buf, int ch, long n)
+[v _memset `(*v ~T0 @X0 1 ef3`*v`i`l ]
+"39
+[; ;lib.c: 39: {
+{
+[e :U _memset ]
+"38
+[; ;lib.c: 38: void *memset(void *buf, int ch, long n)
+[v _buf `*v ~T0 @X0 1 r1 ]
+[v _ch `i ~T0 @X0 1 r2 ]
+[v _n `l ~T0 @X0 1 r3 ]
+"39
+[; ;lib.c: 39: {
+[f ]
+"40
+[; ;lib.c: 40:     char *p;
+[v _p `*uc ~T0 @X0 1 a ]
+"41
+[; ;lib.c: 41:     for(p=buf; n>0; n--)
+{
+[e = _p -> _buf `*uc ]
+[e $ > _n -> -> 0 `i `l 17  ]
+[e $U 18  ]
+[e :U 17 ]
+"42
+[; ;lib.c: 42:         *(p++)=ch;
+[e = *U ++ _p * -> -> 1 `i `x -> -> # *U _p `i `x -> _ch `uc ]
+[e -- _n -> -> 1 `i `l ]
+[e $ > _n -> -> 0 `i `l 17  ]
+[e :U 18 ]
+}
+"43
+[; ;lib.c: 43:     return buf;
+[e ) _buf ]
+[e $UE 16  ]
+"44
+[; ;lib.c: 44: }
+[e :UE 16 ]
+}
+"46
+[; ;lib.c: 46: void *memcpy(void * restrict s1, const void * restrict s2, uint16 n)
+[v _memcpy `(*v ~T0 @X0 1 ef3`*v`*Cv`us ]
+"47
+[; ;lib.c: 47: {
+{
+[e :U _memcpy ]
+[v F54 `*v ~T0 @X0 1 t ]
+"46
+[; ;lib.c: 46: void *memcpy(void * restrict s1, const void * restrict s2, uint16 n)
+[v _s1 `*v ~T0 @X0 1 r1 ]
+[v F56 `*Cv ~T0 @X0 1 t ]
+[v _s2 `*Cv ~T0 @X0 1 r2 ]
+[v _n `us ~T0 @X0 1 r3 ]
+"47
+[; ;lib.c: 47: {
+[f ]
+"48
+[; ;lib.c: 48:     char *d = s1;
+[v _d `*uc ~T0 @X0 1 a ]
+[e = _d -> _s1 `*uc ]
+"49
+[; ;lib.c: 49:     const char *s = s2;
+[v _s `*Cuc ~T0 @X0 1 a ]
+[e = _s -> _s2 `*Cuc ]
+"50
+[; ;lib.c: 50:     while(n>0)
+[e $U 21  ]
+[e :U 22 ]
+"51
+[; ;lib.c: 51:     {
+{
+"52
+[; ;lib.c: 52:         *(d++) = *(s++);
+[e = *U ++ _d * -> -> 1 `i `x -> -> # *U _d `i `x *U ++ _s * -> -> 1 `i `x -> -> # *U _s `i `x ]
+"53
+[; ;lib.c: 53:         n--;
+[e -- _n -> -> 1 `i `us ]
+"54
+[; ;lib.c: 54:     }
+}
+[e :U 21 ]
+"50
+[; ;lib.c: 50:     while(n>0)
+[e $ > -> _n `ui -> -> 0 `i `ui 22  ]
+[e :U 23 ]
+"55
+[; ;lib.c: 55:     return s1;
+[e ) _s1 ]
+[e $UE 20  ]
+"56
+[; ;lib.c: 56: }
+[e :UE 20 ]
+}
+"58
+[; ;lib.c: 58: int memcmp(const void *buf1, const void *buf2, long n)
+[v _memcmp `(i ~T0 @X0 1 ef3`*Cv`*Cv`l ]
+"59
+[; ;lib.c: 59: {
+{
+[e :U _memcmp ]
+"58
+[; ;lib.c: 58: int memcmp(const void *buf1, const void *buf2, long n)
+[v _buf1 `*Cv ~T0 @X0 1 r1 ]
+[v _buf2 `*Cv ~T0 @X0 1 r2 ]
+[v _n `l ~T0 @X0 1 r3 ]
+"59
+[; ;lib.c: 59: {
+[f ]
+"60
+[; ;lib.c: 60:     const char *p1 = buf1;
+[v _p1 `*Cuc ~T0 @X0 1 a ]
+[e = _p1 -> _buf1 `*Cuc ]
+"61
+[; ;lib.c: 61:     const char *p2 = buf2;
+[v _p2 `*Cuc ~T0 @X0 1 a ]
+[e = _p2 -> _buf2 `*Cuc ]
+"62
+[; ;lib.c: 62:     while(n>0)
+[e $U 25  ]
+[e :U 26 ]
+"63
+[; ;lib.c: 63:     {
+{
+"64
+[; ;lib.c: 64:         if(*p2 != *p1)
+[e $ ! != -> *U _p2 `i -> *U _p1 `i 28  ]
+"65
+[; ;lib.c: 65:             return (*p1 > *p2) ? 1 : -1;
+[e ) ? > -> *U _p1 `i -> *U _p2 `i : -> 1 `i -U -> 1 `i ]
+[e $UE 24  ]
+[e :U 28 ]
+"66
+[; ;lib.c: 66:         p1++;
+[e ++ _p1 * -> -> 1 `i `x -> -> # *U _p1 `i `x ]
+"67
+[; ;lib.c: 67:         p2++;
+[e ++ _p2 * -> -> 1 `i `x -> -> # *U _p2 `i `x ]
+"68
+[; ;lib.c: 68:     }
+}
+[e :U 25 ]
+"62
+[; ;lib.c: 62:     while(n>0)
+[e $ > _n -> -> 0 `i `l 26  ]
+[e :U 27 ]
+"69
+[; ;lib.c: 69:     return 0;
+[e ) -> 0 `i ]
+[e $UE 24  ]
+"70
+[; ;lib.c: 70: }
+[e :UE 24 ]
+}
+"72
+[; ;lib.c: 72: int strlen(const char *s)
+[v _strlen `(i ~T0 @X0 1 ef1`*Cuc ]
+"73
+[; ;lib.c: 73: {
+{
+[e :U _strlen ]
+"72
+[; ;lib.c: 72: int strlen(const char *s)
+[v _s `*Cuc ~T0 @X0 1 r1 ]
+"73
+[; ;lib.c: 73: {
+[f ]
+"74
+[; ;lib.c: 74:     int n = 0;
+[v _n `i ~T0 @X0 1 a ]
+[e = _n -> 0 `i ]
+"75
+[; ;lib.c: 75:     while(*s)
+[e $U 30  ]
+[e :U 31 ]
+"76
+[; ;lib.c: 76:     {
+{
+"77
+[; ;lib.c: 77:         s++;
+[e ++ _s * -> -> 1 `i `x -> -> # *U _s `i `x ]
+"78
+[; ;lib.c: 78:         n++;
+[e ++ _n -> 1 `i ]
+"79
+[; ;lib.c: 79:     }
+}
+[e :U 30 ]
+"75
+[; ;lib.c: 75:     while(*s)
+[e $ != -> *U _s `i -> 0 `i 31  ]
+[e :U 32 ]
+"80
+[; ;lib.c: 80:     return n;
+[e ) _n ]
+[e $UE 29  ]
+"81
+[; ;lib.c: 81: }
+[e :UE 29 ]
+}
+"83
+[; ;lib.c: 83: char *strcpy(char * restrict s1, const char * restrict s2)
+[v _strcpy `(*uc ~T0 @X0 1 ef2`*uc`*Cuc ]
+"84
+[; ;lib.c: 84: {
+{
+[e :U _strcpy ]
+[v F73 `*uc ~T0 @X0 1 t ]
+"83
+[; ;lib.c: 83: char *strcpy(char * restrict s1, const char * restrict s2)
+[v _s1 `*uc ~T0 @X0 1 r1 ]
+[v F75 `*Cuc ~T0 @X0 1 t ]
+[v _s2 `*Cuc ~T0 @X0 1 r2 ]
+"84
+[; ;lib.c: 84: {
+[f ]
+"85
+[; ;lib.c: 85:     while(*s2)
+[e $U 34  ]
+[e :U 35 ]
+"86
+[; ;lib.c: 86:     {
+{
+"87
+[; ;lib.c: 87:         *s1 = *s2;
+[e = *U _s1 *U _s2 ]
+"88
+[; ;lib.c: 88:     }
+}
+[e :U 34 ]
+"85
+[; ;lib.c: 85:     while(*s2)
+[e $ != -> *U _s2 `i -> 0 `i 35  ]
+[e :U 36 ]
+"89
+[; ;lib.c: 89:     return s1;
+[e ) _s1 ]
+[e $UE 33  ]
+"90
+[; ;lib.c: 90: }
+[e :UE 33 ]
+}
+"92
+[; ;lib.c: 92: int strcmp(const char *s1, const char *s2)
+[v _strcmp `(i ~T0 @X0 1 ef2`*Cuc`*Cuc ]
+"93
+[; ;lib.c: 93: {
+{
+[e :U _strcmp ]
+"92
+[; ;lib.c: 92: int strcmp(const char *s1, const char *s2)
+[v _s1 `*Cuc ~T0 @X0 1 r1 ]
+[v _s2 `*Cuc ~T0 @X0 1 r2 ]
+"93
+[; ;lib.c: 93: {
+[f ]
+"94
+[; ;lib.c: 94:     while(*s1 || *s2)
+[e $U 38  ]
+[e :U 39 ]
+"95
+[; ;lib.c: 95:     {
+{
+"96
+[; ;lib.c: 96:         if(*s1 != *s2)
+[e $ ! != -> *U _s1 `i -> *U _s2 `i 41  ]
+"97
+[; ;lib.c: 97:             return (*s1 > *s2) ? 1 : -1;
+[e ) ? > -> *U _s1 `i -> *U _s2 `i : -> 1 `i -U -> 1 `i ]
+[e $UE 37  ]
+[e :U 41 ]
+"98
+[; ;lib.c: 98:         s1++;
+[e ++ _s1 * -> -> 1 `i `x -> -> # *U _s1 `i `x ]
+"99
+[; ;lib.c: 99:         s2++;
+[e ++ _s2 * -> -> 1 `i `x -> -> # *U _s2 `i `x ]
+"100
+[; ;lib.c: 100:     }
+}
+[e :U 38 ]
+"94
+[; ;lib.c: 94:     while(*s1 || *s2)
+[e $ || != -> *U _s1 `i -> 0 `i != -> *U _s2 `i -> 0 `i 39  ]
+[e :U 40 ]
+"101
+[; ;lib.c: 101:     return 0;
+[e ) -> 0 `i ]
+[e $UE 37  ]
+"102
+[; ;lib.c: 102: }
+[e :UE 37 ]
+}
+"104
+[; ;lib.c: 104: int strncmp(const char *s1, const char *s2, int len)
+[v _strncmp `(i ~T0 @X0 1 ef3`*Cuc`*Cuc`i ]
+"105
+[; ;lib.c: 105: {
+{
+[e :U _strncmp ]
+"104
+[; ;lib.c: 104: int strncmp(const char *s1, const char *s2, int len)
+[v _s1 `*Cuc ~T0 @X0 1 r1 ]
+[v _s2 `*Cuc ~T0 @X0 1 r2 ]
+[v _len `i ~T0 @X0 1 r3 ]
+"105
+[; ;lib.c: 105: {
+[f ]
+"106
+[; ;lib.c: 106:     while((*s1 || *s2) && (len > 0))
+[e $U 43  ]
+[e :U 44 ]
+"107
+[; ;lib.c: 107:     {
+{
+"108
+[; ;lib.c: 108:         if(*s1 != *s2)
+[e $ ! != -> *U _s1 `i -> *U _s2 `i 46  ]
+"109
+[; ;lib.c: 109:             return (*s1 > *s2) ? 1 : -1;
+[e ) ? > -> *U _s1 `i -> *U _s2 `i : -> 1 `i -U -> 1 `i ]
+[e $UE 42  ]
+[e :U 46 ]
+"110
+[; ;lib.c: 110:         s1++;
+[e ++ _s1 * -> -> 1 `i `x -> -> # *U _s1 `i `x ]
+"111
+[; ;lib.c: 111:         s2++;
+[e ++ _s2 * -> -> 1 `i `x -> -> # *U _s2 `i `x ]
+"112
+[; ;lib.c: 112:         len--;
+[e -- _len -> 1 `i ]
+"113
+[; ;lib.c: 113:     }
+}
+[e :U 43 ]
+"106
+[; ;lib.c: 106:     while((*s1 || *s2) && (len > 0))
+[e $ && || != -> *U _s1 `i -> 0 `i != -> *U _s2 `i -> 0 `i > _len -> 0 `i 44  ]
+[e :U 45 ]
+"114
+[; ;lib.c: 114: }
+[e :UE 42 ]
+}
+"116
+[; ;lib.c: 116: int putxval(unsigned long value, int column)
+[v _putxval `(i ~T0 @X0 1 ef2`ul`i ]
+"117
+[; ;lib.c: 117: {
+{
+[e :U _putxval ]
+"116
+[; ;lib.c: 116: int putxval(unsigned long value, int column)
+[v _value `ul ~T0 @X0 1 r1 ]
+[v _column `i ~T0 @X0 1 r2 ]
+"117
+[; ;lib.c: 117: {
+[f ]
+"118
+[; ;lib.c: 118:     char buf[9];
+[v _buf `uc ~T0 @X0 -> 9 `i a ]
+"119
+[; ;lib.c: 119:     char *p;
+[v _p `*uc ~T0 @X0 1 a ]
+"120
+[; ;lib.c: 120:     p = buf + sizeof(buf) - 1;
+[e = _p - + &U _buf * -> -> # _buf `ui `ux -> -> # *U &U _buf `ui `ux * -> -> 1 `i `x -> -> # *U + &U _buf * -> -> # _buf `ui `ux -> -> # *U &U _buf `ui `ux `i `x ]
+"121
+[; ;lib.c: 121:     *(p--) = '\0';
+[e = *U -- _p * -> -> 1 `i `x -> -> # *U _p `i `x -> -> 0 `ui `uc ]
+"123
+[; ;lib.c: 123:     if(!value && !column)
+[e $ ! && ! != _value -> -> -> 0 `i `l `ul ! != _column -> 0 `i 48  ]
+"124
+[; ;lib.c: 124:         column++;
+[e ++ _column -> 1 `i ]
+[e :U 48 ]
+"126
+[; ;lib.c: 126:     while(value || column)
+[e $U 49  ]
+[e :U 50 ]
+"127
+[; ;lib.c: 127:     {
+{
+"128
+[; ;lib.c: 128:         *(p--) = "0123456789"[value & 0xf];
+[e = *U -- _p * -> -> 1 `i `x -> -> # *U _p `i `x *U + :s 1C * -> & _value -> -> -> 15 `i `l `ul `ux -> -> # *U :s 1C `ui `ux ]
+"129
+[; ;lib.c: 129:         value >>= 4;
+[e =>> _value -> -> 4 `i `ul ]
+"130
+[; ;lib.c: 130:         if(column)
+[e $ ! != _column -> 0 `i 52  ]
+"131
+[; ;lib.c: 131:             column--;
+[e -- _column -> 1 `i ]
+[e :U 52 ]
+"132
+[; ;lib.c: 132:     }
+}
+[e :U 49 ]
+"126
+[; ;lib.c: 126:     while(value || column)
+[e $ || != _value -> -> -> 0 `i `l `ul != _column -> 0 `i 50  ]
+[e :U 51 ]
+"134
+[; ;lib.c: 134:     puts(p+1);
+[e ( _puts (1 -> + _p * -> -> 1 `i `x -> -> # *U _p `i `x `*uc ]
+"136
+[; ;lib.c: 136:     return 0;
+[e ) -> 0 `i ]
+[e $UE 47  ]
+"137
+[; ;lib.c: 137: }
+[e :UE 47 ]
+}
+[a 1C 48 49 50 51 52 53 54 55 56 57 0 ]

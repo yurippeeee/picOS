@@ -1,0 +1,169 @@
+Version 4.0 HI-TECH Software Intermediate Code
+"29 ./intr.h
+[; ;./intr.h: 29: struct intcon {
+[s S2 `Vuc 1 `Vuc 1 `Vuc 1 ]
+[n S2 intcon intcon3 intcon2 intcon ]
+"35
+[; ;./intr.h: 35: struct i_efp {
+[s S4 `Vuc 1 `Vuc 1 `Vuc 1 `Vuc 1 `Vuc 1 `Vuc 1 ]
+[n S4 i_efp pie1 pir1 ipr1 pie2 pir2 ipr2 ]
+"8 ./lib.h
+[; ;./lib.h: 8: unsigned char getc(void);
+[v _getc `(uc ~T0 @X0 0 ef ]
+"20
+[; ;./lib.h: 20: int strncmp(const char *s1, const char *s2, int len);
+[v _strncmp `(i ~T0 @X0 0 ef3`*Cuc`*Cuc`i ]
+"7
+[; ;./lib.h: 7: int puts(unsigned char *str);
+[v _puts `(i ~T0 @X0 0 ef1`*uc ]
+"10 ./defines.h
+[; ;./defines.h: 10: volatile uint8 WREG __attribute__((address(0xFE8)));
+[v _WREG `Vuc ~T0 @X0 1 e@4072 ]
+"12 ./intr.h
+[; ;./intr.h: 12: volatile struct intcon INTCON __attribute__((address(0xFF0)));
+[v _INTCON `VS2 ~T0 @X0 1 e@4080 ]
+"15
+[; ;./intr.h: 15: volatile struct i_efp I_EFP __attribute__((address(0xF9D)));
+[v _I_EFP `VS4 ~T0 @X0 1 e@3997 ]
+"18
+[; ;./intr.h: 18: volatile uint8 RCON __attribute__((address(0xFD0)));
+[v _RCON `Vuc ~T0 @X0 1 e@4048 ]
+"21
+[; ;./intr.h: 21: volatile uint8 STATUS __attribute__((address(0xFD8)));
+[v _STATUS `Vuc ~T0 @X0 1 e@4056 ]
+"24
+[; ;./intr.h: 24: volatile uint8 BSR __attribute__((address(0xFE0)));
+[v _BSR `Vuc ~T0 @X0 1 e@4064 ]
+"26
+[; ;./intr.h: 26: volatile uint8 intr_stack[3];
+[v _intr_stack `Vuc ~T0 @X0 -> 3 `i e ]
+"8 intr.c
+[; ;intr.c: 8: void intr_init()
+[v _intr_init `(v ~T0 @X0 1 ef ]
+"9
+[; ;intr.c: 9: {
+{
+[e :U _intr_init ]
+[f ]
+"10
+[; ;intr.c: 10:     RCON = 0x00;
+[e = _RCON -> -> 0 `i `uc ]
+"11
+[; ;intr.c: 11:     volatile struct intcon *itc = &INTCON;
+[v _itc `*VS2 ~T0 @X0 1 a ]
+[e = _itc &U _INTCON ]
+"12
+[; ;intr.c: 12:     itc->intcon = 0xC0;
+[e = . *U _itc 2 -> -> 192 `i `uc ]
+"13
+[; ;intr.c: 13: }
+[e :UE 7 ]
+}
+"17
+[; ;intr.c: 17: void intr()
+[v _intr `(v ~T0 @X0 1 ef ]
+"18
+[; ;intr.c: 18: {
+{
+[e :U _intr ]
+[f ]
+"19
+[; ;intr.c: 19:     volatile struct intcon *itc = &INTCON;
+[v _itc `*VS2 ~T0 @X0 1 a ]
+[e = _itc &U _INTCON ]
+"20
+[; ;intr.c: 20:     volatile struct i_efp *iefp = &I_EFP;
+[v _iefp `*VS4 ~T0 @X0 1 a ]
+[e = _iefp &U _I_EFP ]
+"73
+[; ;intr.c: 73:     if(iefp->pir1 & 0x20)
+[e $ ! != & -> . *U _iefp 1 `i -> 32 `i -> 0 `i 9  ]
+"74
+[; ;intr.c: 74:     {
+{
+"75
+[; ;intr.c: 75:         int c;
+[v _c `i ~T0 @X0 1 a ]
+"76
+[; ;intr.c: 76:         static char buf[32];
+[v F86 `uc ~T0 @X0 -> 32 `i s buf ]
+"77
+[; ;intr.c: 77:         static int len;
+[v F87 `i ~T0 @X0 1 s len ]
+"79
+[; ;intr.c: 79:         c=getc();
+[e = _c -> ( _getc ..  `i ]
+"81
+[; ;intr.c: 81:         if(c != '\n')
+[e $ ! != -> _c `ui -> 10 `ui 10  ]
+"82
+[; ;intr.c: 82:         {
+{
+"83
+[; ;intr.c: 83:             buf[len++] = c;
+[e = *U + &U F86 * -> -> ++ F87 -> 1 `i `ui `ux -> -> # *U &U F86 `ui `ux -> _c `uc ]
+"84
+[; ;intr.c: 84:         }
+}
+[e $U 11  ]
+"85
+[; ;intr.c: 85:         else
+[e :U 10 ]
+"86
+[; ;intr.c: 86:         {
+{
+"87
+[; ;intr.c: 87:             buf[len++] = '\0';
+[e = *U + &U F86 * -> -> ++ F87 -> 1 `i `ui `ux -> -> # *U &U F86 `ui `ux -> -> 0 `ui `uc ]
+"88
+[; ;intr.c: 88:             if(!strncmp(buf, "echo", 4))
+[e $ ! ! != ( _strncmp (3 , , -> &U F86 `*Cuc :s 2C -> 4 `i -> 0 `i 12  ]
+"89
+[; ;intr.c: 89:             {
+{
+"90
+[; ;intr.c: 90:                 puts(buf+4);
+[e ( _puts (1 -> + &U F86 * -> -> 4 `i `x -> -> # *U &U F86 `i `x `*uc ]
+"91
+[; ;intr.c: 91:                 puts("\n");
+[e ( _puts (1 :s 3C ]
+"92
+[; ;intr.c: 92:             }
+}
+[e $U 13  ]
+"93
+[; ;intr.c: 93:             else
+[e :U 12 ]
+"94
+[; ;intr.c: 94:             {
+{
+"95
+[; ;intr.c: 95:                 puts("unkown.\n");
+[e ( _puts (1 :s 4C ]
+"96
+[; ;intr.c: 96:             }
+}
+[e :U 13 ]
+"97
+[; ;intr.c: 97:             puts("> ");
+[e ( _puts (1 :s 5C ]
+"98
+[; ;intr.c: 98:             len = 0;
+[e = F87 -> 0 `i ]
+"99
+[; ;intr.c: 99:         }
+}
+[e :U 11 ]
+"101
+[; ;intr.c: 101:     }
+}
+[e :U 9 ]
+"138
+[; ;intr.c: 138: }
+[e :UE 8 ]
+}
+[a 1C 101 99 104 111 0 ]
+[a 2C 101 99 104 111 0 ]
+[a 5C 62 32 0 ]
+[a 4C 117 110 107 111 119 110 46 10 0 ]
+[a 3C 10 0 ]
