@@ -1,0 +1,131 @@
+Version 4.0 HI-TECH Software Intermediate Code
+"29 ./intr.h
+[; ;./intr.h: 29: struct intcon {
+[s S2 `Vuc 1 `Vuc 1 `Vuc 1 ]
+[n S2 intcon intcon3 intcon2 intcon ]
+"35
+[; ;./intr.h: 35: struct i_efp {
+[s S4 `Vuc 1 `Vuc 1 `Vuc 1 `Vuc 1 `Vuc 1 `Vuc 1 ]
+[n S4 i_efp pie1 pir1 ipr1 pie2 pir2 ipr2 ]
+[v F53 `(v ~T0 @X0 0 tf2`s`ul ]
+"13 ./interrupt.h
+[; ;./interrupt.h: 13: int softvec_setintr(softvec_type_t type, softvec_handler_t handler);
+[v _softvec_setintr `(i ~T0 @X0 0 ef2`s`*F53 ]
+[v F66 `(v ~T0 @X0 0 tf2`s`ul ]
+[v F70 `(v ~T0 @X0 0 tf2`s`ul ]
+[v F75 `(v ~T0 @X0 0 tf2`s`ul ]
+[v F78 `(v ~T0 @X0 0 tf2`s`ul ]
+[v F94 `(v ~T0 @X0 0 tf2`s`ul ]
+[v F97 `(v ~T0 @X0 0 tf2`s`ul ]
+[v F109 `(v ~T0 @X0 0 tf2`s`ul ]
+"10 ./defines.h
+[; ;./defines.h: 10: volatile uint8 WREG __attribute__((address(0xFE8)));
+[v _WREG `Vuc ~T0 @X0 1 e@4072 ]
+"12 ./intr.h
+[; ;./intr.h: 12: volatile struct intcon INTCON __attribute__((address(0xFF0)));
+[v _INTCON `VS2 ~T0 @X0 1 e@4080 ]
+"15
+[; ;./intr.h: 15: volatile struct i_efp I_EFP __attribute__((address(0xF9D)));
+[v _I_EFP `VS4 ~T0 @X0 1 e@3997 ]
+"18
+[; ;./intr.h: 18: volatile uint8 RCON __attribute__((address(0xFD0)));
+[v _RCON `Vuc ~T0 @X0 1 e@4048 ]
+"21
+[; ;./intr.h: 21: volatile uint8 STATUS __attribute__((address(0xFD8)));
+[v _STATUS `Vuc ~T0 @X0 1 e@4056 ]
+"24
+[; ;./intr.h: 24: volatile uint8 BSR __attribute__((address(0xFE0)));
+[v _BSR `Vuc ~T0 @X0 1 e@4064 ]
+"26
+[; ;./intr.h: 26: volatile uint8 intr_stack[3];
+[v _intr_stack `Vuc ~T0 @X0 -> 3 `i e ]
+"4 ./interrupt.h
+[; ;./interrupt.h: 4: static char softvec;
+[v _softvec `uc ~T0 @X0 1 s ]
+"5 interrupt.c
+[; ;interrupt.c: 5: int softvec_init(void)
+[v _softvec_init `(i ~T0 @X0 1 ef ]
+"6
+[; ;interrupt.c: 6: {
+{
+[e :U _softvec_init ]
+[f ]
+"7
+[; ;interrupt.c: 7:     int type;
+[v _type `i ~T0 @X0 1 a ]
+"8
+[; ;interrupt.c: 8:     for(type = 0; type < 2; type++)
+{
+[e = _type -> 0 `i ]
+[e $ < _type -> 2 `i 8  ]
+[e $U 9  ]
+[e :U 8 ]
+"9
+[; ;interrupt.c: 9:         softvec_setintr(type, 0);
+[e ( _softvec_setintr (2 , -> _type `s -> -> 0 `i `*F66 ]
+[e ++ _type -> 1 `i ]
+[e $ < _type -> 2 `i 8  ]
+[e :U 9 ]
+}
+"10
+[; ;interrupt.c: 10:     return 0;
+[e ) -> 0 `i ]
+[e $UE 7  ]
+"11
+[; ;interrupt.c: 11: }
+[e :UE 7 ]
+}
+"13
+[; ;interrupt.c: 13: int softvec_setintr(softvec_type_t type, softvec_handler_t handler)
+[v _softvec_setintr `(i ~T0 @X0 1 ef2`s`*F70 ]
+"14
+[; ;interrupt.c: 14: {
+{
+[e :U _softvec_setintr ]
+"13
+[; ;interrupt.c: 13: int softvec_setintr(softvec_type_t type, softvec_handler_t handler)
+[v _type `s ~T0 @X0 1 r1 ]
+[v _handler `*F75 ~T0 @X0 1 r2 ]
+"14
+[; ;interrupt.c: 14: {
+[f ]
+"15
+[; ;interrupt.c: 15:     ((softvec_handler_t *)(&softvec))[type] = handler;
+[e = *U + -> &U _softvec `**F78 * -> _type `x -> -> # *U -> &U _softvec `**F78 `i `x _handler ]
+"16
+[; ;interrupt.c: 16:     return 0;
+[e ) -> 0 `i ]
+[e $UE 11  ]
+"17
+[; ;interrupt.c: 17: }
+[e :UE 11 ]
+}
+"19
+[; ;interrupt.c: 19: void soft_interrupt(softvec_type_t type, unsigned long sp)
+[v _soft_interrupt `(v ~T0 @X0 1 ef2`s`ul ]
+"20
+[; ;interrupt.c: 20: {
+{
+[e :U _soft_interrupt ]
+"19
+[; ;interrupt.c: 19: void soft_interrupt(softvec_type_t type, unsigned long sp)
+[v _type `s ~T0 @X0 1 r1 ]
+[v _sp `ul ~T0 @X0 1 r2 ]
+"20
+[; ;interrupt.c: 20: {
+[f ]
+"21
+[; ;interrupt.c: 21:     softvec_handler_t handler = ((softvec_handler_t *)(&softvec))[type];
+[v _handler `*F94 ~T0 @X0 1 a ]
+[e = _handler *U + -> &U _softvec `**F97 * -> _type `x -> -> # *U -> &U _softvec `**F97 `i `x ]
+"22
+[; ;interrupt.c: 22:     if(handler)
+[e $ ! != _handler -> -> 0 `i `*F109 13  ]
+"23
+[; ;interrupt.c: 23:         handler(type, sp);
+[e ( *U _handler (2 , _type _sp ]
+[e :U 13 ]
+"24
+[; ;interrupt.c: 24: }
+[e :UE 12 ]
+}

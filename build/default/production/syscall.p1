@@ -1,1 +1,91 @@
 Version 4.0 HI-TECH Software Intermediate Code
+[v F68 `(i ~T0 @X0 0 tf2`i`**uc ]
+[v F72 `(i ~T0 @X0 0 tf2`i`**uc ]
+[v F21 `(i ~T0 @X0 0 tf2`i`**uc ]
+"13 ./syscall.h
+[; ;./syscall.h: 13:         struct {
+[s S3 `*F21 1 `*uc 1 `i 1 `i 1 `**uc 1 `ul 1 ]
+[n S3 . func name stacksize argc argv ret ]
+"21
+[; ;./syscall.h: 21:         struct {
+[s S4 `i 1 ]
+[n S4 . dummy ]
+"12
+[; ;./syscall.h: 12:     union {
+[u S2 `S3 1 `S4 1 ]
+[n S2 . run exit ]
+"11
+[; ;./syscall.h: 11: typedef struct {
+[s S1 `S2 1 ]
+[n S1 . un ]
+"13 syscall.c
+[; ;syscall.c: 13:     pic_syscall(PIC_SYSCALL_TYPE_RUN, &param);
+[c E13 0 1 .. ]
+[n E13 . PIC_SYSCALL_TYPE_RUN PIC_SYSCALL_TYPE_EXIT  ]
+"15 ./picOS.h
+[; ;./picOS.h: 15: void pic_syscall(pic_syscall_type_t type, pic_syscall_param_t *param);
+[v _pic_syscall `(v ~T0 @X0 0 ef2`E13`*S1 ]
+"10 ./defines.h
+[; ;./defines.h: 10: volatile uint8 WREG __attribute__((address(0xFE8)));
+[v _WREG `Vuc ~T0 @X0 1 e@4072 ]
+"5 syscall.c
+[; ;syscall.c: 5: pic_thread_id_t pic_run(pic_func_t func, char *name, int stacksize, int argc, char *argv[])
+[v _pic_run `(ul ~T0 @X0 1 ef5`*F68`*uc`i`i`**uc ]
+"6
+[; ;syscall.c: 6: {
+{
+[e :U _pic_run ]
+"5
+[; ;syscall.c: 5: pic_thread_id_t pic_run(pic_func_t func, char *name, int stacksize, int argc, char *argv[])
+[v _func `*F72 ~T0 @X0 1 r1 ]
+[v _name `*uc ~T0 @X0 1 r2 ]
+[v _stacksize `i ~T0 @X0 1 r3 ]
+[v _argc `i ~T0 @X0 1 r4 ]
+[v _argv `**uc ~T0 @X0 1 r5 ]
+"6
+[; ;syscall.c: 6: {
+[f ]
+"7
+[; ;syscall.c: 7:     pic_syscall_param_t param;
+[v _param `S1 ~T0 @X0 1 a ]
+"8
+[; ;syscall.c: 8:     param.un.run.func = func;
+[e = . . . _param 0 0 0 _func ]
+"9
+[; ;syscall.c: 9:     param.un.run.name = name;
+[e = . . . _param 0 0 1 _name ]
+"10
+[; ;syscall.c: 10:     param.un.run.stacksize = stacksize;
+[e = . . . _param 0 0 2 _stacksize ]
+"11
+[; ;syscall.c: 11:     param.un.run.argc = argc;
+[e = . . . _param 0 0 3 _argc ]
+"12
+[; ;syscall.c: 12:     param.un.run.argv = argv;
+[e = . . . _param 0 0 4 _argv ]
+"13
+[; ;syscall.c: 13:     pic_syscall(PIC_SYSCALL_TYPE_RUN, &param);
+[e ( _pic_syscall (2 , . `E13 0 &U _param ]
+"14
+[; ;syscall.c: 14:     return param.un.run.ret;
+[e ) . . . _param 0 0 5 ]
+[e $UE 5  ]
+"15
+[; ;syscall.c: 15: }
+[e :UE 5 ]
+}
+"17
+[; ;syscall.c: 17: void pic_exit(void)
+[v _pic_exit `(v ~T0 @X0 1 ef ]
+"18
+[; ;syscall.c: 18: {
+{
+[e :U _pic_exit ]
+[f ]
+"19
+[; ;syscall.c: 19:     pic_syscall(PIC_SYSCALL_TYPE_EXIT, 0);
+[e ( _pic_syscall (2 , . `E13 1 -> -> 0 `i `*S1 ]
+"20
+[; ;syscall.c: 20: }
+[e :UE 6 ]
+}

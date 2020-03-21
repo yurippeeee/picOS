@@ -202,11 +202,11 @@ Version 4.0 HI-TECH Software Intermediate Code
 [; ;lib.c: 47: {
 {
 [e :U _memcpy ]
-[v F54 `*v ~T0 @X0 1 t ]
+[v F61 `*v ~T0 @X0 1 t ]
 "46
 [; ;lib.c: 46: void *memcpy(void * restrict s1, const void * restrict s2, uint16 n)
 [v _s1 `*v ~T0 @X0 1 r1 ]
-[v F56 `*Cv ~T0 @X0 1 t ]
+[v F63 `*Cv ~T0 @X0 1 t ]
 [v _s2 `*Cv ~T0 @X0 1 r2 ]
 [v _n `us ~T0 @X0 1 r3 ]
 "47
@@ -362,11 +362,11 @@ Version 4.0 HI-TECH Software Intermediate Code
 [; ;lib.c: 84: {
 {
 [e :U _strcpy ]
-[v F73 `*uc ~T0 @X0 1 t ]
+[v F80 `*uc ~T0 @X0 1 t ]
 "83
 [; ;lib.c: 83: char *strcpy(char * restrict s1, const char * restrict s2)
 [v _s1 `*uc ~T0 @X0 1 r1 ]
-[v F75 `*Cuc ~T0 @X0 1 t ]
+[v F82 `*Cuc ~T0 @X0 1 t ]
 [v _s2 `*Cuc ~T0 @X0 1 r2 ]
 "84
 [; ;lib.c: 84: {

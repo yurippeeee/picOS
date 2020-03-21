@@ -86,10 +86,10 @@ Version 4.0 HI-TECH Software Intermediate Code
 [v _c `i ~T0 @X0 1 a ]
 "76
 [; ;intr.c: 76:         static char buf[32];
-[v F86 `uc ~T0 @X0 -> 32 `i s buf ]
+[v F93 `uc ~T0 @X0 -> 32 `i s buf ]
 "77
 [; ;intr.c: 77:         static int len;
-[v F87 `i ~T0 @X0 1 s len ]
+[v F94 `i ~T0 @X0 1 s len ]
 "79
 [; ;intr.c: 79:         c=getc();
 [e = _c -> ( _getc ..  `i ]
@@ -101,7 +101,7 @@ Version 4.0 HI-TECH Software Intermediate Code
 {
 "83
 [; ;intr.c: 83:             buf[len++] = c;
-[e = *U + &U F86 * -> -> ++ F87 -> 1 `i `ui `ux -> -> # *U &U F86 `ui `ux -> _c `uc ]
+[e = *U + &U F93 * -> -> ++ F94 -> 1 `i `ui `ux -> -> # *U &U F93 `ui `ux -> _c `uc ]
 "84
 [; ;intr.c: 84:         }
 }
@@ -114,16 +114,16 @@ Version 4.0 HI-TECH Software Intermediate Code
 {
 "87
 [; ;intr.c: 87:             buf[len++] = '\0';
-[e = *U + &U F86 * -> -> ++ F87 -> 1 `i `ui `ux -> -> # *U &U F86 `ui `ux -> -> 0 `ui `uc ]
+[e = *U + &U F93 * -> -> ++ F94 -> 1 `i `ui `ux -> -> # *U &U F93 `ui `ux -> -> 0 `ui `uc ]
 "88
 [; ;intr.c: 88:             if(!strncmp(buf, "echo", 4))
-[e $ ! ! != ( _strncmp (3 , , -> &U F86 `*Cuc :s 2C -> 4 `i -> 0 `i 12  ]
+[e $ ! ! != ( _strncmp (3 , , -> &U F93 `*Cuc :s 2C -> 4 `i -> 0 `i 12  ]
 "89
 [; ;intr.c: 89:             {
 {
 "90
 [; ;intr.c: 90:                 puts(buf+4);
-[e ( _puts (1 -> + &U F86 * -> -> 4 `i `x -> -> # *U &U F86 `i `x `*uc ]
+[e ( _puts (1 -> + &U F93 * -> -> 4 `i `x -> -> # *U &U F93 `i `x `*uc ]
 "91
 [; ;intr.c: 91:                 puts("\n");
 [e ( _puts (1 :s 3C ]
@@ -149,7 +149,7 @@ Version 4.0 HI-TECH Software Intermediate Code
 [e ( _puts (1 :s 5C ]
 "98
 [; ;intr.c: 98:             len = 0;
-[e = F87 -> 0 `i ]
+[e = F94 -> 0 `i ]
 "99
 [; ;intr.c: 99:         }
 }

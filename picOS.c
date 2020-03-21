@@ -3,12 +3,13 @@
 #include "intr.h"
 #include "syscall.h"
 #include "lib.h"
+#include "interrupt.h"
 
 #define THREAD_NUM 6
 #define THREAD_NAME_SIZE 15
 
 uint8 userstack[THREAD_NUM*6];
-uint8 userstack_pointer;
+static char userstack_pointer = 0;
 
 //??????????????????
 typedef struct _pic_context{
@@ -22,7 +23,7 @@ typedef struct _pic_thread{
     char stack;
     
     struct {
-        pic_fanc_t func;
+        pic_func_t func;
         int argc;
         char **argv;
     }init;
@@ -113,10 +114,9 @@ static pic_thread_id_t thread_run(pic_func_t func, char *name, int stacksize, in
     int i;
     pic_thread *thp;
     uint8 *sp;
-    static char 
-    thread_stack = userstack_pointer;
+    static char thread_stack = userstack_pointer;
     
-    for (i=0; i<THREADNUM; i++)
+    for (i=0; i<THREAD_NUM; i++)
     {
         thp = &threads[i];
         if(!thp->init.func)
@@ -213,4 +213,50 @@ static void schedule(void)
 static void syscall_intr(void)
 {
     syscall_proc(current->syscall.type, current->syscall.param);
+}
+
+static void softerr_intr(void)
+{
+    puts(current->name);
+    puts("DOWN.\n");
+    getcurrent();
+    thread_exit();
+}
+
+static void thread_intr(softvec_type_t type, unsigned long sp)
+{
+    current->context.sp = sp;
+    if(handlers[type])
+        handlers[type]();
+    
+    schedule();
+    
+    dispatch(&current->context);
+}
+
+void pic_start(pic_func_t func, char *name, int stacksize, int argc, char *argv[])
+{
+    current = NULL;
+    
+    readyque.head = readyque.tail = NULL;
+    memset(threads, 0, sizeof(threads));
+    memset(handlers, 0, sizeof(handlers));
+    
+    setintr(SOFTVEC_TYPE_SYSCALL, syscall_intr);
+    setintr(SOFTVEC_TYPE_SOFTERR, softerr_intr);
+    
+    current = (pic_thread *)thread_run(func, name, stacksize, argc, argv);
+    dispatch(&current->context);
+}
+
+void pic_sysdown(void)
+{
+    puts("system error!\n");
+    while(1);
+}
+
+void pic_syscall(pic_syscall_type_t type, pic_syscall_param_t *param)
+{
+    current->syscall.type = type;
+    current->syscall.param = param;
 }

@@ -19,6 +19,10 @@ typedef unsigned long uint32;
 
 
 volatile uint8 WREG __attribute__((address(0xFE8)));
+
+typedef uint32 pic_thread_id_t;
+typedef int (*pic_func_t)(int argc, char *argv[]);
+typedef void (*pic_handler_t)(void);
 # 1 "./lib.h" 2
 
 

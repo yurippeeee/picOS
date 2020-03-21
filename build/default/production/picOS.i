@@ -18,6 +18,10 @@ typedef unsigned long uint32;
 
 
 volatile uint8 WREG __attribute__((address(0xFE8)));
+
+typedef uint32 pic_thread_id_t;
+typedef int (*pic_func_t)(int argc, char *argv[]);
+typedef void (*pic_handler_t)(void);
 # 1 "picOS.c" 2
 
 # 1 "./picOS.h" 1
@@ -26,6 +30,31 @@ volatile uint8 WREG __attribute__((address(0xFE8)));
 
 
 # 1 "./syscall.h" 1
+
+
+
+
+
+typedef enum {
+    PIC_SYSCALL_TYPE_RUN = 0,
+    PIC_SYSCALL_TYPE_EXIT,
+}pic_syscall_type_t;
+
+typedef struct {
+    union {
+        struct {
+            pic_func_t func;
+            char *name;
+            int stacksize;
+            int argc;
+            char **argv;
+            pic_thread_id_t ret;
+        }run;
+        struct {
+            int dummy;
+        }exit;
+    }un;
+}pic_syscall_param_t;
 # 5 "./picOS.h" 2
 
 
@@ -35,7 +64,7 @@ void pic_exit(void);
 
 void pic_start(pic_func_t func, char *name, int stacksize, int argc, char *argv[]);
 
-void pic_shutdown();
+void pic_sysdown(void);
 
 void pic_syscall(pic_syscall_type_t type, pic_syscall_param_t *param);
 
@@ -80,8 +109,6 @@ void intr_init();
 void intr();
 # 3 "picOS.c" 2
 
-# 1 "./syscall.h" 1
-# 4 "picOS.c" 2
 
 # 1 "./lib.h" 1
 
@@ -109,12 +136,29 @@ int strncmp(const char *s1, const char *s2, int len);
 int putxval(unsigned long value, int column);
 # 5 "picOS.c" 2
 
+# 1 "./interrupt.h" 1
+
+
+
+static char softvec;
+
+
+typedef short softvec_type_t;
+typedef void (*softvec_handler_t)(softvec_type_t type, unsigned long sp);
+
+
+
+int softvec_init(void);
+int softvec_setintr(softvec_type_t type, softvec_handler_t handler);
+void soft_interrupt(softvec_type_t type, unsigned long sp);
+# 6 "picOS.c" 2
+
 
 
 
 
 uint8 userstack[6*6];
-uint8 userstack_pointer;
+static char userstack_pointer = 0;
 
 
 typedef struct _pic_context{
@@ -128,7 +172,7 @@ typedef struct _pic_thread{
     char stack;
 
     struct {
-        pic_fanc_t func;
+        pic_func_t func;
         int argc;
         char **argv;
     }init;
@@ -163,18 +207,18 @@ void dispatch(pic_context *context)
 
 static int getcurrent(void)
 {
-    if(current == (void(*0)))
+    if(current == 0)
     {
         return -1;
     }
 
     readyque.head =current->next;
-    if(readyque.head == (void(*0)))
+    if(readyque.head == 0)
     {
-        readyque.tail = (void(*0));
+        readyque.tail = 0;
     }
 
-    current->next = (void(*0));
+    current->next = 0;
 
     return 0;
 }
@@ -182,7 +226,7 @@ static int getcurrent(void)
 
 static int putcurrent(void)
 {
-    if(current == (void(*0)))
+    if(current == 0)
     {
         return -1;
     }
@@ -219,10 +263,9 @@ static pic_thread_id_t thread_run(pic_func_t func, char *name, int stacksize, in
     int i;
     pic_thread *thp;
     uint8 *sp;
-    static char
-    thread_stack = userstack_pointer;
+    static char thread_stack = userstack_pointer;
 
-    for (i=0; i<THREADNUM; i++)
+    for (i=0; i<6; i++)
     {
         thp = &threads[i];
         if(!thp->init.func)
@@ -234,7 +277,7 @@ static pic_thread_id_t thread_run(pic_func_t func, char *name, int stacksize, in
     memset(thp, 0, sizeof(*thp));
 
     strcpy(thp->name, name);
-    thp->next = (void(*0));
+    thp->next = 0;
 
     thp->init.func = func;
     thp->init.argc = argc;
@@ -319,4 +362,50 @@ static void schedule(void)
 static void syscall_intr(void)
 {
     syscall_proc(current->syscall.type, current->syscall.param);
+}
+
+static void softerr_intr(void)
+{
+    puts(current->name);
+    puts("DOWN.\n");
+    getcurrent();
+    thread_exit();
+}
+
+static void thread_intr(softvec_type_t type, unsigned long sp)
+{
+    current->context.sp = sp;
+    if(handlers[type])
+        handlers[type]();
+
+    schedule();
+
+    dispatch(&current->context);
+}
+
+void pic_start(pic_func_t func, char *name, int stacksize, int argc, char *argv[])
+{
+    current = 0;
+
+    readyque.head = readyque.tail = 0;
+    memset(threads, 0, sizeof(threads));
+    memset(handlers, 0, sizeof(handlers));
+
+    setintr(1, syscall_intr);
+    setintr(0, softerr_intr);
+
+    current = (pic_thread *)thread_run(func, name, stacksize, argc, argv);
+    dispatch(&current->context);
+}
+
+void pic_sysdown(void)
+{
+    puts("system error!\n");
+    while(1);
+}
+
+void pic_syscall(pic_syscall_type_t type, pic_syscall_param_t *param)
+{
+    current->syscall.type = type;
+    current->syscall.param = param;
 }

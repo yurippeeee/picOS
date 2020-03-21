@@ -10,7 +10,7 @@ void pic_exit(void);
 
 void pic_start(pic_func_t func, char *name, int stacksize, int argc, char *argv[]);
 
-void pic_shutdown();
+void pic_sysdown(void);
 
 void pic_syscall(pic_syscall_type_t type, pic_syscall_param_t *param);
 
